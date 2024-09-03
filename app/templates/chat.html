@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message Center</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row no-gutters">
+            <!-- Sidebar -->
+            <div id="sidebar" class="col-md-3 col-lg-2 sidebar">
+                <div class="header">
+                    <a href="#" class="logo-container"><img src="logo.png" width="70" class="logo" alt="Logo"></a>
+                </div>
+                <div class="nav-icons">
+                    <a href="#" class="nav-icon active" data-target="all-messages" title="All Messages">
+                        <i class="fas fa-inbox"></i>
+                    </a>
+                    <a href="#" class="nav-icon" data-target="contacts" title="Contacts">
+                        <i class="fas fa-address-book"></i>
+                    </a>
+                    <a href="#" class="nav-icon" data-target="archived" title="Archived">
+                        <i class="fas fa-archive"></i>
+                    </a>
+                    <a href="#" class="nav-icon" data-target="bin" title="Bin">
+                        <i class="fas fa-trash-alt"></i>
+                    </a>
+                </div>
+                <!-- Pesquisa de contactos -->
+                <div class="search-container">
+                    <form class="search-form">
+                        <input type="text" class="form-control search-input" placeholder="Pesquisar contactos">
+                        <button type="submit" class="search-button">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+                </div>
+                <div id="all-messages" class="chat-list active">
+                    <div class="chat-user">
+                        <img src="avatar1.png" class="rounded-circle" alt="User Image">
+                        <div class="chat-info">
+                            <h6>John Doe <small><i class="fas fa-circle text-success"></i></small>
+</h6>
+                            <small class="text-dark">Hey, how's it going?</small>
+                        </div>
+                    </div>
+                    <div class="chat-user">
+                        <img src="avatar1.png" class="rounded-circle" alt="User Image">
+                        <div class="chat-info">
+                            <h6>John Doe <small><i class="fas fa-circle text-success"></i></small>
+</h6>
+                            <small class="text-dark">Hey, how's it going?</small>
+                        </div>
+                    </div>
+                </div>
+                <div id="contacts" class="chat-list">
+                    <div class="chat-user">
+                        <img src="avatar3.png" class="rounded-circle" alt="User Image">
+                        <div class="chat-info">
+                            <h6>Alice Johnson</h6>
+                            <small class="text-dark">Project Manager</small>
+                        </div>
+                    </div>
+                    <div class="chat-user">
+                        <img src="avatar4.png" class="rounded-circle" alt="User Image">
+                        <div class="chat-info">
+                            <h6>Bob Wilson</h6>
+                            <small class="text-dark">Developer</small>
+                        </div>
+                    </div>
+                </div>
+                <div id="archived" class="chat-list">
+                    <div class="chat-user">
+                        <img src="avatar5.png" class="rounded-circle" alt="User Image">
+                        <div class="chat-info">
+                            <h6>Carol Taylor</h6>
+                            <small class="text-dark">Last message: 2 weeks ago</small>
+                        </div>
+                    </div>
+                </div>
+                <div id="bin" class="chat-list">
+                    <div class="chat-user">
+                        <img src="avatar6.png" class="rounded-circle" alt="User Image">
+                        <div class="chat-info">
+                            <h6>David Brown</h6>
+                            <small class="text-dark">Deleted: Yesterday</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- User Profile -->
+                <div class="user-profile">
+                    <img src="user-avatar.png" alt="User Avatar" class="user-avatar">
+                    <span class="user-name">John Doe</span>
+                    <i class="fas fa-chevron-up"></i>
+                    <div class="user-menu">
+                        <a href="#" class="menu-item">Perfil</a>
+                        <a href="#" class="menu-item">Configurações</a>
+                        <a href="#" class="menu-item">Sair</a>
+                    </div>
+                </div>
+                
+            </div>
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10" id="main-content">
+                <div class="chat-header d-flex align-items-center">
+                    <button id="sidebar-toggle" class="btn btn-light d-md-none mr-3">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <img src="avatar.png" class="rounded-circle mr-2" width="40" alt="User Image">
+                    <div>
+                        <h5>Jess Torff</h5>
+                        <small><i class="fas fa-circle text-success"></i> Online</small>
+                    </div>
+                    <div class="ml-auto">
+                        <i class="fas fa-search mx-2"></i>
+                        <i class="fas fa-phone mx-2"></i>
+                        <i class="fas fa-video mx-2"></i>
+                        <i class="fas fa-ellipsis-v mx-2"></i>
+
+                    </div>
+                </div>
+                <div class="chat-body">
+                    <div class="message">
+                        <p class="small text-muted">Monday, 22 April 2020</p>
+                        <div class="d-flex justify-content-start">
+                            <img src="avatar.png" class="rounded-circle mr-2" width="25" height="25" alt="User Image">
+                            <div class="message-content">
+                                <p>Great, I'm eager to hear your feedback. We've put a lot of effort into refining these designs.</p>
+                                <span class="message-time">09:12 AM</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="message">
+                        <div class="d-flex justify-content-end">
+                            <div class="message-content sent">
+                                <p>Wow, these prototypes look fantastic! I really like the sleek design and the color choices. I think they'll definitely appeal to our target market</p>
+                                <span class="message-time">09:14 AM</span>
+                            </div>
+                            <img src="avatar.png" class="rounded-circle ml-2" width="25" height="25" alt="User Image">
+                        </div>
+                    </div>
+                    <div class="message">
+                        <div class="d-flex justify-content-start">
+                            <img src="avatar.png" class="rounded-circle mr-2" width="25" height="25" alt="User Image">
+                            <div class="message-content">
+                                <p>Actually, I noticed a small issue with the placement of the logo on the second prototype. It seems a bit off-center. Other than that, everything looks spot on</p>
+                                <img src="avatar.png" class="img-thumbnail" alt="Image">
+                                <span class="message-time">09:32 AM</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-footer">
+                    <input type="text" class="form-control" placeholder="Type your message here">
+                    <i class="fas fa-paper-plane ml-2"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Custom JS -->
+    <script src="script.js"></script>
+</body>
+</html>
