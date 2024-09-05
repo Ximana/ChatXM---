@@ -1,16 +1,10 @@
-<!DOCTYPE html>
-<html lang="pt">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Página Inicial</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="styles.css">
-    <style>
+{% extends "base.html" %}
+
+    <!-- Head-->
+{% block head %}
+
+<title>Home</title>
+<style>
     /* styles.css */
 body {
     background-color: #f5f5f5;
@@ -26,24 +20,32 @@ body {
     font-size: 18px;
 }
 </style>
-</head>
 
-<body>
+{% endblock %}
+
+    <!--Conteudo da tag <body>-->
+    {% block body %}
+
     <div class="container d-flex flex-column justify-content-center align-items-center vh-100">
         <!-- Logo da App -->
         <div class="logo mb-5">
-            <img src="logo.png" alt="Logo da App" class="img-fluid">
+            <img src="{{ url_for('static', filename='img/app/logo.png') }}" alt="Logo da App" class="img-fluid">
         </div>
         <!-- Botões de Login e Criar Conta -->
         <div class="buttons text-center">
-            <a href="login.html" class="btn btn-primary btn-lg mb-3">Login</a>
-            <a href="register.html" class="btn btn-secondary btn-lg">Criar Conta</a>
+            <a href="{{ url_for('usuarios.login') }}" class="btn btn-primary btn-lg mb-3">Login</a>
+            <a href="{{ url_for('usuarios.registrar') }}" class="btn btn-secondary btn-lg mb-3">Criar Conta</a>
         </div>
     </div>
-    <!-- Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
-</html>
+
+    {% endblock %}
+
+
+    
+    <!--Arquivos Javascript-->
+    {% block scriptJS %}
+
+    
+    {% endblock %}
+
 

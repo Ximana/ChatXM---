@@ -113,11 +113,7 @@
                     <button id="sidebar-toggle" class="btn btn-light d-md-none mr-3">
                         <i class="fas fa-bars"></i>
                     </button>
-                    <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="rounded-circle mr-2" width="40" alt="User Image">
-                    <div>
-                        <h5>Jess Torff</h5>
-                        <small><i class="fas fa-circle text-success"></i> Online</small>
-                    </div>
+                    
                     <div class=" ">
                         <i class="fas fa-search mx-2"></i>
                         <i class="fas fa-phone mx-2"></i>
@@ -126,40 +122,11 @@
                     </div>
                 </div>
                 <div class="chat-body">
-                    <div class="message">
-                        <p class="small text-muted">Monday, 22 April 2020</p>
-                        <div class="d-flex justify-content-start">
-                            <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="rounded-circle mr-2" width="25" height="25" alt="User Image">
-                            <div class="message-content">
-                                <p>Great, I'm eager to hear your feedback. We've put a lot of effort into refining these designs.</p>
-                                <span class="message-time">09:12 AM</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="message">
-                        <div class="d-flex justify-content-end">
-                            <div class="message-content sent">
-                                <p>Wow, these prototypes look fantastic! I really like the sleek design and the color choices. I think they'll definitely appeal to our target market</p>
-                                <span class="message-time">09:14 AM</span>
-                            </div>
-                            <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="rounded-circle ml-2" width="25" height="25" alt="User Image">
-                        </div>
-                    </div>
-                    <div class="message">
-                        <div class="d-flex justify-content-start">
-                            <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="rounded-circle mr-2" width="25" height="25" alt="User Image">
-                            <div class="message-content">
-                                <p>Actually, I noticed a small issue with the placement of the logo on the second prototype. It seems a bit off-center. Other than that, everything looks spot on</p>
-                                <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="img-thumbnail" alt="Image">
-                                <span class="message-time">09:32 AM</span>
-                            </div>
-                        </div>
+                    <div class="  d-flex justify-content-center align-items-center  " style="min-height: 100vh;">
+                        <img src="{{ url_for('static', filename='img/app/logo.png') }}" class="w-50" alt="logo">
                     </div>
                 </div>
-                <div class="chat-footer">
-                    <input type="text" class="form-control" placeholder="Escreva a sua mensagem">
-                    <i class="fas fa-paper-plane ml-2"></i>
-                </div>
+                
             </div>
         </div>
     </div>
@@ -171,4 +138,6 @@
 
     
     {% endblock %}
+
+
 

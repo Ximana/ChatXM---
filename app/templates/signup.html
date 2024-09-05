@@ -1,47 +1,59 @@
-<!DOCTYPE html>
-<html lang="pt">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro - Message Center</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div class="d-flex align-items-center justify-content-center vh-100">
-        <div class="signup-card p-4 shadow">
-            <div class="text-center mb-4">
-                <img src="logo.png" width="70" class="logo mb-3" alt="Logo">
-                <h4>Cadastrar</h4>
-            </div>
-            <form>
-                <div class="form-group">
-                    <label for="name">Nome Completo</label>
-                    <input type="text" class="form-control" id="name" placeholder="Digite seu nome completo">
-                </div>
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" class="form-control" id="email" placeholder="Digite seu email">
-                </div>
-                <div class="form-group">
-                    <label for="password">Senha</label>
-                    <input type="password" class="form-control" id="password" placeholder="Digite sua senha">
-                </div>
-                <button type="submit" class="btn btn-primary btn-block">Cadastrar</button>
-                <div class="text-center mt-3">
-                    <a href="login.html">Já tem uma conta? Entrar</a>
-                </div>
-            </form>
-        </div>
-    </div>
-    <!-- Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
-</html>
+{% extends "base.html" %}
 
+<!-- Head-->
+{% block head %}
+<title>Registro</title>
+{% endblock %}
+
+<!--Conteudo da tag <body>-->
+{% block body %}
+
+<div class="d-flex align-items-center justify-content-center vh-100">
+    <div class="signup-card p-4 shadow">
+        <div class="text-center mb-4">
+            <img src="{{ url_for('static', filename='img/app/logo.png') }}" width="70" class="logo mb-3" alt="Logo">
+            <h4>Novo Usuario</h4>
+        </div>
+
+        <!-- Arquivo mensagem flash -->
+        {% include 'mensagens_flash.html' %}
+
+
+        <form action="/usuarios/registrar" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="nome">Nome Completo</label>
+                <input type="text" class="form-control" name="nome" id="nome" placeholder="Digite seu nome completo" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" class="form-control" name="email" id="email" placeholder="Digite seu email">
+            </div>
+            <div class="form-group">
+                <label for="telefone">Telefone</label>
+                <input type="tel" class="form-control" name="telefone" id="telefone"
+                    placeholder="Digite seu numero de telefone" required>
+            </div>
+            <div class="form-group">
+                <label for="imagem">Imagem</label>
+                <input type="file" class="form-control" name="imagem" id="imagem" accept=".jpg, .jpeg, .png">
+            </div>
+            <div class="form-group">
+                <label for="password">Senha</label>
+                <input type="password" class="form-control" name="senha" id="password" placeholder="Digite sua senha">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block w-100 mt-3">Cadastrar</button>
+            <div class="text-center mt-3">
+                <a href="{{ url_for('usuarios.login') }}">Já tem uma conta? Entrar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+{% endblock %}
+
+<!--Arquivos Javascript-->
+{% block scriptJS %}
+
+
+{% endblock %}

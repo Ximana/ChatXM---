@@ -113,11 +113,7 @@
                     <button id="sidebar-toggle" class="btn btn-light d-md-none mr-3">
                         <i class="fas fa-bars"></i>
                     </button>
-                    <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="rounded-circle mr-2" width="40" alt="User Image">
-                    <div>
-                        <h5>Jess Torff</h5>
-                        <small><i class="fas fa-circle text-success"></i> Online</small>
-                    </div>
+                    
                     <div class=" ">
                         <i class="fas fa-search mx-2"></i>
                         <i class="fas fa-phone mx-2"></i>
@@ -126,43 +122,56 @@
                     </div>
                 </div>
                 <div class="chat-body">
-                    <div class="message">
-                        <p class="small text-muted">Monday, 22 April 2020</p>
-                        <div class="d-flex justify-content-start">
-                            <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="rounded-circle mr-2" width="25" height="25" alt="User Image">
-                            <div class="message-content">
-                                <p>Great, I'm eager to hear your feedback. We've put a lot of effort into refining these designs.</p>
-                                <span class="message-time">09:12 AM</span>
+                    <div class="container mt-4">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <img src="{{ url_for('static', filename='img/usuarios/' ~ usuario.foto_perfil) }}" class="rounded-circle mb-3" alt="User Avatar" width="150">
+                                        <h5 class="card-title">John Mark Doe Kyzer</h5>
+                                        <p class="text-muted">Coach</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div><strong>Nome:</strong> <span>{{ usuario.nome_usuario }}</span></div>
+                                        <div><strong>Email:</strong> <span>{{ usuario.email }}</span></div>
+                                        <div><strong>Telefone:</strong> <span>{{ usuario.numero_telefone }}</span></div>
+
+                                        <div class="mt-5">
+                                            <form class="d-inline" action="{{ url_for('usuarios.remover_usuario') }}" method="POST">
+                                                <button type="submit" class="btn btn-danger btn-sm">Eliminar Conta</button>
+                                            </form>
+                                            <button type="button" class="btn btn-outline-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalEditarUsuario">
+                                                Editar Usuario
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="message">
-                        <div class="d-flex justify-content-end">
-                            <div class="message-content sent">
-                                <p>Wow, these prototypes look fantastic! I really like the sleek design and the color choices. I think they'll definitely appeal to our target market</p>
-                                <span class="message-time">09:14 AM</span>
-                            </div>
-                            <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="rounded-circle ml-2" width="25" height="25" alt="User Image">
-                        </div>
-                    </div>
-                    <div class="message">
-                        <div class="d-flex justify-content-start">
-                            <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="rounded-circle mr-2" width="25" height="25" alt="User Image">
-                            <div class="message-content">
-                                <p>Actually, I noticed a small issue with the placement of the logo on the second prototype. It seems a bit off-center. Other than that, everything looks spot on</p>
-                                <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="img-thumbnail" alt="Image">
-                                <span class="message-time">09:32 AM</span>
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5>Sobre</h5>
+                                        <p>Edith is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+                                        <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout...</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="chat-footer">
-                    <input type="text" class="form-control" placeholder="Escreva a sua mensagem">
-                    <i class="fas fa-paper-plane ml-2"></i>
-                </div>
+                
             </div>
         </div>
     </div>
+
+    <!-- Modal Editar Usuario-->
+    {% include 'modalEditarUsuario.html' %}
     
     {% endblock %}
 
@@ -171,4 +180,6 @@
 
     
     {% endblock %}
+
+
 

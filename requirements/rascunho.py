@@ -147,6 +147,3 @@ def logout_usuario():
 
 
 
-
-# Adicione esta linha se não estiver presente
-sqlalchemy.url = mysql+pymysql://ximana:ximana@localhost/chatxm
