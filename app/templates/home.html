@@ -17,17 +17,17 @@
                         <img src="{{ url_for('static', filename='img/app/logo.png') }}" width="70" class="logo" alt="Logo"></a>
                 </div>
                 <div class="nav-icons">
-                    <a href="#" class="nav-icon active" data-target="all-messages" title="All Messages">
+                    <a href="#" class="nav-icon active" data-target="all-messages" title="Todas Messagens">
                         <i class="fas fa-inbox"></i>
                     </a>
-                    <a href="#" class="nav-icon" data-target="contacts" title="Contacts">
+                    <a href="#" class="nav-icon" data-target="contacts" title="Contactos">
                         <i class="fas fa-address-book"></i>
                     </a>
-                    <a href="#" class="nav-icon" data-target="archived" title="Archived">
+                    <a href="#" class="nav-icon" data-target="blocked" title="Bloqueados">
                         <i class="fas fa-archive"></i>
                     </a>
-                    <a href="#" class="nav-icon" data-target="bin" title="Bin">
-                        <i class="fas fa-trash-alt"></i>
+                    <a href="#" class="nav-icon" data-target="group" title="Grupos">
+                        <i class="fas fa-users"></i>
                     </a>
                 </div>
                 <!-- Pesquisa de contactos -->
@@ -39,11 +39,12 @@
                         </button>
                     </form>
                 </div>
+                <!-- Listar Todas as conversas -->
                 <div id="all-messages" class="chat-list active">
                     <div class="chat-user">
                         <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="rounded-circle" alt="User Image">
                         <div class="chat-info">
-                            <h6>John Doe <small><i class="fas fa-circle text-success"></i></small>
+                            <h6>John Doe <small><i class="fas fa-circle text-success"></i>online</small>
 </h6>
                             <small class="text-dark">Hey, how's it going?</small>
                         </div>
@@ -51,43 +52,39 @@
                     <div class="chat-user">
                         <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="rounded-circle" alt="User Image">
                         <div class="chat-info">
-                            <h6>John Doe <small><i class="fas fa-circle text-success"></i></small>
+                            <h6>John Doe <small><i class="fas fa-circle text-success"></i>online</small>
 </h6>
                             <small class="text-dark">Hey, how's it going?</small>
                         </div>
                     </div>
                 </div>
+                <!-- Listar Todos os usuarios -->
                 <div id="contacts" class="chat-list">
                     <div class="chat-user">
                         <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="rounded-circle" alt="User Image">
                         <div class="chat-info">
-                            <h6>Alice Johnson</h6>
+                            <h6>Nome do usuario <small><i class="fas fa-circle text-success"></i>online</small></h6>
                             <small class="text-dark">Project Manager</small>
                         </div>
                     </div>
-                    <div class="chat-user">
-                        <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="rounded-circle" alt="User Image">
-                        <div class="chat-info">
-                            <h6>Bob Wilson</h6>
-                            <small class="text-dark">Developer</small>
-                        </div>
-                    </div>
+                    
                 </div>
-                <div id="archived" class="chat-list">
+                <!-- Lista contactos bloqueados aqui -->
+                <div id="blocked" class="chat-list">
                     <div class="chat-user">
                         <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="rounded-circle" alt="User Image">
                         <div class="chat-info">
-                            <h6>Carol Taylor</h6>
+                            <h6>Nome contacto bloqueado</h6>
                             <small class="text-dark">Last message: 2 weeks ago</small>
                         </div>
                     </div>
                 </div>
-                <div id="bin" class="chat-list">
+                <!-- Listar todos os grupos -->
+                <div id="group" class="chat-list">
                     <div class="chat-user">
                         <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="rounded-circle" alt="User Image">
                         <div class="chat-info">
-                            <h6>David Brown</h6>
-                            <small class="text-dark">Deleted: Yesterday</small>
+                            <h6>Nome do grupo</h6>
                         </div>
                     </div>
                 </div>
@@ -135,9 +132,109 @@
 
     <!--Arquivos Javascript-->
     {% block scriptJS %}
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     
+    <script>
+    // Função para listar conversas
+    function listarConversas() {
+        $.ajax({
+            url: "{{ url_for('chat.listar_conversas') }}",
+            method: 'GET',
+            success: function(response) {
+                $('#all-messages').empty();
+                response.forEach(function(item) {
+                    $('#all-messages').append(`
+                        <div class="chat-user">
+                            <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="rounded-circle" alt="User Image">
+                            <div class="chat-info">
+                                <h6>${item.nome_usuario}</h6>
+                                <small class="text-dark">${item.mensagem}</small>
+                            </div>
+                        </div>
+                    `);
+                });
+            }
+        });
+    }
+    
+    // Função para listar todos os usuários
+    function listarUsuarios() {
+        $.ajax({
+            url: "{{ url_for('chat.listar_usuarios') }}",
+            method: 'GET',
+            success: function(response) {
+                $('#contacts').empty();
+                response.forEach(function(item) {
+                    $('#contacts').append(`
+                        <div class="chat-user">
+                            <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="rounded-circle" alt="User Image">
+                            <div class="chat-info">
+                                <h6>${item.nome_usuario}</h6>
+                            </div>
+                        </div>
+                    `);
+                });
+            }
+        });
+    }
+    
+    // Função para listar usuários bloqueados
+    function listarBloqueados() {
+        $.ajax({
+            url: "{{ url_for('chat.listar_bloqueados') }}",
+            method: 'GET',
+            success: function(response) {
+                $('#blocked').empty();
+                response.forEach(function(item) {
+                    $('#blocked').append(`
+                        <div class="chat-user">
+                            <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="rounded-circle" alt="User Image">
+                            <div class="chat-info">
+                                <h6>${item.nome_usuario}</h6>
+                            </div>
+                        </div>
+                    `);
+                });
+            }
+        });
+    }
+    
+    // Função para listar grupos
+    function listarGrupos() {
+        $.ajax({
+            url: "{{ url_for('chat.listar_grupos') }}",
+            method: 'GET',
+            success: function(response) {
+                $('#group').empty();
+                response.forEach(function(item) {
+                    $('#group').append(`
+                        <div class="chat-user">
+                            <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="rounded-circle" alt="User Image">
+                            <div class="chat-info">
+                                <h6>${item.nome_grupo}</h6>
+                            </div>
+                        </div>
+                    `);
+                });
+            }
+        });
+    }
+    
+    // Atualizar listas a cada 5 segundos
+    setInterval(function() {
+        listarConversas();
+        listarUsuarios();
+        listarBloqueados();
+        listarGrupos();
+    }, 5000);
+    
+    // Carregar listas ao carregar a página
+    $(document).ready(function() {
+        listarConversas();
+        listarUsuarios();
+        listarBloqueados();
+        listarGrupos();
+    });
+    </script>
     {% endblock %}
-
-
-
+    

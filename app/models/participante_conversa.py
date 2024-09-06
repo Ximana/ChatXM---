@@ -8,3 +8,8 @@ class ParticipanteConversa(db.Model):
     id_usuario = db.Column(db.Integer, db.ForeignKey('Usuarios.id_usuario'), nullable=False)
     adicionado_em = db.Column(db.TIMESTAMP, default=datetime.utcnow)
     db.UniqueConstraint('id_conversa', 'id_usuario')
+
+# Adicionando o relacionamento com a tabela Conversa
+    conversa = db.relationship('Conversa', backref='participantes')
+    
+    db.UniqueConstraint('id_conversa', 'id_usuario')
