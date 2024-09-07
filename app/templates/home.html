@@ -1,155 +1,207 @@
 {% extends "base.html" %}
 
-    <!-- Head-->
+<!-- Head-->
 {% block head %}
-    <title>ChatXm</title>
+<title>ChatXm</title>
 {% endblock %}
 
-    <!--Conteudo da tag <body>-->
-    {% block body %}
+<!--Conteudo da tag <body>-->
+{% block body %}
 
-    <div class="container-fluid">
-        <div class="row no-gutters">
-            <!-- Sidebar -->
-            <div id="sidebar" class="col-md-3 col-lg-2 sidebar">
-                <div class="header">
-                    <a href="{{ url_for('chat.home') }}" class="logo-container">
-                        <img src="{{ url_for('static', filename='img/app/logo.png') }}" width="70" class="logo" alt="Logo"></a>
+<div class="container-fluid">
+    <div class="row no-gutters">
+        <!-- Sidebar -->
+        <div id="sidebar" class="col-md-3 col-lg-2 sidebar">
+            <div class="header">
+                <a href="{{ url_for('chat.home') }}" class="logo-container">
+                    <img src="{{ url_for('static', filename='img/app/logo.png') }}" width="70" class="logo"
+                        alt="Logo"></a>
+            </div>
+            <div class="nav-icons">
+                <a href="#" class="nav-icon active" data-target="all-messages" title="Todas Messagens">
+                    <i class="fas fa-inbox"></i>
+                </a>
+                <a href="#" class="nav-icon" data-target="contacts" title="Contactos">
+                    <i class="fas fa-address-book"></i>
+                </a>
+                <a href="#" class="nav-icon" data-target="blocked" title="Bloqueados">
+                    <i class="fas fa-archive"></i>
+                </a>
+                <a href="#" class="nav-icon" data-target="group" title="Grupos">
+                    <i class="fas fa-users"></i>
+                </a>
+            </div>
+            <!-- Pesquisa de contactos -->
+            <div class="search-container">
+                <form class="search-form">
+                    <input type="text" class="form-control search-input" placeholder="Pesquisar contactos">
+                    <button type="submit" class="search-button">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
+            <!-- Listar Todas as conversas -->
+            <div id="all-messages" class="chat-list active">
+                <div class="chat-user">
+                    <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="rounded-circle"
+                        alt="User Image">
+                    <div class="chat-info">
+                        <h6>John Doe <small><i class="fas fa-circle text-success"></i>online</small>
+                        </h6>
+                        <small class="text-dark">Hey, how's it going?</small>
+                    </div>
                 </div>
-                <div class="nav-icons">
-                    <a href="#" class="nav-icon active" data-target="all-messages" title="Todas Messagens">
-                        <i class="fas fa-inbox"></i>
-                    </a>
-                    <a href="#" class="nav-icon" data-target="contacts" title="Contactos">
-                        <i class="fas fa-address-book"></i>
-                    </a>
-                    <a href="#" class="nav-icon" data-target="blocked" title="Bloqueados">
-                        <i class="fas fa-archive"></i>
-                    </a>
-                    <a href="#" class="nav-icon" data-target="group" title="Grupos">
-                        <i class="fas fa-users"></i>
-                    </a>
+                <div class="chat-user">
+                    <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="rounded-circle"
+                        alt="User Image">
+                    <div class="chat-info">
+                        <h6>John Doe <small><i class="fas fa-circle text-success"></i>online</small>
+                        </h6>
+                        <small class="text-dark">Hey, how's it going?</small>
+                    </div>
                 </div>
-                <!-- Pesquisa de usuarios -->
-                <div class="search-container">
-                    <form class="search-form">
-                        <input type="text" class="form-control search-input" placeholder="Pesquisar contactos">
-                        <button type="submit" class="search-button">
-                            <i class="fas fa-search"></i>
-                        </button>
+            </div>
+            <!-- Listar Todos os usuarios -->
+            <div id="contacts" class="chat-list">
+                <div class="chat-user">
+                    <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="rounded-circle"
+                        alt="User Image">
+                    <div class="chat-info">
+                        <h6>Nome do usuario <small><i class="fas fa-circle text-success"></i>online</small></h6>
+                        <small class="text-dark">Project Manager</small>
+                    </div>
+                </div>
+
+            </div>
+            <!-- Lista contactos bloqueados aqui -->
+            <div id="blocked" class="chat-list">
+                <div class="chat-user">
+                    <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="rounded-circle"
+                        alt="User Image">
+                    <div class="chat-info">
+                        <h6>Nome contacto bloqueado</h6>
+                        <small class="text-dark">Last message: 2 weeks ago</small>
+                    </div>
+                </div>
+            </div>
+            <!-- Listar todos os grupos -->
+            <div id="group" class="chat-list">
+                <div class="chat-user">
+                    <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="rounded-circle"
+                        alt="User Image">
+                    <div class="chat-info">
+                        <h6>Nome do grupo</h6>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Profile -->
+            <div class="user-profile">
+                <img src="{{ url_for('static', filename='img/usuarios/' ~ session['imagem_usuario']) }}"
+                    alt="User Avatar" class="user-avatar">
+                <span class="user-name">{{session['nome_usuario']}}</span>
+                <i class="fas fa-chevron-up"></i>
+                <div class="user-menu">
+                    <a href="{{ url_for('usuarios.ver_perfil', usuario_id=session['id_usuario']) }}"
+                        class="menu-item">Perfil</a>
+                    <a href="#" class="menu-item">Configurações</a>
+                    <form action="{{ url_for('usuarios.logout') }}" method="POST" style="display: inline;">
+                        <button type="submit" class="menu-item btn-link w-100">Sair</button>
                     </form>
                 </div>
-                <!-- Listar Todas as conversas -->
-                <div id="all-messages" class="chat-list active">
-                    <div class="chat-user">
-                        <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="rounded-circle" alt="User Image">
-                        <div class="chat-info">
-                            <h6>John Doe <small><i class="fas fa-circle text-success"></i>online</small>
-</h6>
-                            <small class="text-dark">Hey, how's it going?</small>
-                        </div>
-                    </div>
-                    <div class="chat-user">
-                        <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="rounded-circle" alt="User Image">
-                        <div class="chat-info">
-                            <h6>John Doe <small><i class="fas fa-circle text-success"></i>online</small>
-</h6>
-                            <small class="text-dark">Hey, how's it going?</small>
-                        </div>
-                    </div>
-                </div>
-                <!-- Listar Todos os usuarios -->
-                <div id="contacts" class="chat-list">
-                    <div class="chat-user">
-                        <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="rounded-circle" alt="User Image">
-                        <div class="chat-info">
-                            <h6>Nome do usuario <small><i class="fas fa-circle text-success"></i>online</small></h6>
-                            <small class="text-dark">Project Manager</small>
-                        </div>
-                    </div>
-                    
-                </div>
-                <!-- Lista contactos bloqueados aqui -->
-                <div id="blocked" class="chat-list">
-                    <div class="chat-user">
-                        <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="rounded-circle" alt="User Image">
-                        <div class="chat-info">
-                            <h6>Nome contacto bloqueado</h6>
-                            <small class="text-dark">Last message: 2 weeks ago</small>
-                        </div>
-                    </div>
-                </div>
-                <!-- Listar todos os grupos -->
-                <div id="group" class="chat-list">
-                    <div class="chat-user">
-                        <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="rounded-circle" alt="User Image">
-                        <div class="chat-info">
-                            <h6>Nome do grupo</h6>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- User Profile -->
-                <div class="user-profile">
-                    <img src="{{ url_for('static', filename='img/usuarios/' ~ session['imagem_usuario']) }}" alt="User Avatar" class="user-avatar">
-                    <span class="user-name">{{session['nome_usuario']}}</span>
-                    <i class="fas fa-chevron-up"></i>
-                    <div class="user-menu">
-                        <a href="{{ url_for('usuarios.ver_perfil', usuario_id=session['id_usuario']) }}" class="menu-item">Perfil</a>
-                        <a href="#" class="menu-item">Configurações</a>
-                        <form action="{{ url_for('usuarios.logout') }}" method="POST" style="display: inline;">
-                            <button type="submit" class="menu-item btn-link w-100">Sair</button>
-                        </form>
-                    </div>
-                </div>
-                
             </div>
-            <!-- Main Content -->
-            <div class="col-md-9 col-lg-10" id="main-content">
-                <div class="chat-header d-flex align-items-center bg-success">
-                    <button id="sidebar-toggle" class="btn btn-light d-md-none mr-3">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    
-                    <div class=" ">
-                        <i class="fas fa-search mx-2"></i>
-                        <i class="fas fa-phone mx-2"></i>
-                        <i class="fas fa-video mx-2"></i>
-                        <i class="fas fa-ellipsis-v mx-2"></i>
+
+        </div>
+        <!-- Main Content Tela do chat/convers -->
+        <div class="col-md-9 col-lg-10" id="main-content">
+            <!-- Dados do usuario participante da conversa -->
+            <div class="chat-header d-flex align-items-center bg-success">
+                <button id="sidebar-toggle" class="btn btn-light d-md-none mr-3">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="rounded-circle mr-2"
+                    width="40" alt="User Image"><!--Foto de perfil do usuario-->
+                <div>
+                    <h5>Nome usuario a coversar</h5>
+                    <small><i class="fas fa-circle text-success"></i> status</small>
+                </div>
+                <div class=" ">
+                    <i class="fas fa-search mx-2"></i>
+                    <i class="fas fa-phone mx-2"></i>
+                    <i class="fas fa-video mx-2"></i>
+                    <i class="fas fa-ellipsis-v mx-2"></i>
+                </div>
+            </div>
+            <div class="chat-body">
+                <div class="message">
+                    <p class="small text-muted">Monday, 22 April 2020</p>
+                    <div class="d-flex justify-content-start">
+                        <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}"
+                            class="rounded-circle mr-2" width="25" height="25" alt="User Image">
+                        <!-- Mensagem recebida -->
+                        <div class="message-content">
+                            <p>Great, I'm eager to hear your feedback. We've put a lot of effort into refining these
+                                designs.</p>
+                            <span class="message-time">09:12 AM</span>
+                        </div>
                     </div>
                 </div>
-                <div class="chat-body">
-                    <div class="  d-flex justify-content-center align-items-center  " style="min-height: 100vh;">
-                        <img src="{{ url_for('static', filename='img/app/logo.png') }}" class="w-50" alt="logo">
+                <div class="message">
+                    <div class="d-flex justify-content-end">
+                        <!-- Mensagem enviada -->
+                        <div class="message-content sent">
+                            <p>Wow, these prototypes look fantastic! I really like the sleek design and the color
+                                choices. I think they'll definitely appeal to our target market</p>
+                            <span class="message-time">09:14 AM</span>
+                        </div>
+                        <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}"
+                            class="rounded-circle ml-2" width="25" height="25" alt="User Image">
                     </div>
                 </div>
-                
+                <div class="message">
+                    <div class="d-flex justify-content-start">
+                        <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}"
+                            class="rounded-circle mr-2" width="25" height="25" alt="User Image">
+                        <!-- Mensagem recebida -->
+                        <div class="message-content">
+                            <p>Actually, I noticed a small issue with the placement of the logo on the second prototype.
+                                It seems a bit off-center. Other than that, everything looks spot on</p>
+                            <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}"
+                                class="img-thumbnail" alt="Image">
+                            <span class="message-time">09:32 AM</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Campo para escrever mensagem-->
+            <div class="chat-footer">
+                <input type="text" class="form-control" placeholder="Escreva a sua mensagem">
+                <i class="fas fa-paper-plane ml-2"></i>
             </div>
         </div>
     </div>
-    
-    {% endblock %}
+</div>
 
-    <!--Arquivos Javascript-->
-    {% block scriptJS %}
-    <!--<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>-->
-    <script src="{{ url_for('static', filename='js/jquery-3.6.0.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/sidebarScript.js') }}"></script>
-    
-    <script>
+{% endblock %}
+
+<!--Arquivos Javascript-->
+{% block scriptJS %}
+<!--<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>-->
+<script src="{{ url_for('static', filename='js/jquery-3.6.0.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/sidebarScript.js') }}"></script>
+
+<script>
     // Função para listar conversas
-    function listarConversas() {
+function listarConversas() {
     $.ajax({
         url: "{{ url_for('chat.listar_conversas') }}",
         method: 'GET',
-        success: function(response) {
+        success: function (response) {
             $('#all-messages').empty();
-            response.forEach(function(item) {
-                // Define a classe para o status online ou offline
+            response.forEach(function (item) {
                 let statusClass = item.status === 'online' ? 'text-success' : 'text-danger';
-
                 $('#all-messages').append(`
-                    <div class="chat-user">
+                    <div class="chat-user" data-id-usuario="${item.id_usuario}">
                         <img src="{{ url_for('static', filename='img/usuarios/') }}${item.foto_perfil}" class="rounded-circle" alt="User Image">
                         <div class="chat-info">
                             <h6>${item.nome_usuario} <small><i class="fas fa-circle ${statusClass}"></i> ${item.status}</small></h6>
@@ -158,42 +210,52 @@
                     </div>
                 `);
             });
+            // Adicionar evento de clique após inserir os itens
+            adicionarEventoClique();
         }
     });
 }
-    
+
     // Função para listar todos os usuários
-    function listarUsuarios() {
-        $.ajax({
-            url: "{{ url_for('chat.listar_usuarios') }}",
-            method: 'GET',
-            success: function(response) {
-                $('#contacts').empty();
-                response.forEach(function(item) {
-                    // Define a classe para o status online ou offline
+function listarUsuarios() {
+    $.ajax({
+        url: "{{ url_for('chat.listar_usuarios') }}",
+        method: 'GET',
+        success: function (response) {
+            $('#contacts').empty();
+            response.forEach(function (item) {
                 let statusClass = item.status === 'online' ? 'text-success' : 'text-danger';
-                
-                    $('#contacts').append(`
-                        <div class="chat-user">
-                            <img src="{{ url_for('static', filename='img/usuarios/') }}${item.foto_perfil}" class="rounded-circle" alt="User Image">
-                            <div class="chat-info">
-                                <h6>${item.nome_usuario} <small><i class="fas fa-circle ${statusClass}"></i> ${item.status}</small></h6>
-                            </div>
+                $('#contacts').append(`
+                    <div class="chat-user" data-id-usuario="${item.id_usuario}">
+                        <img src="{{ url_for('static', filename='img/usuarios/') }}${item.foto_perfil}" class="rounded-circle" alt="User Image">
+                        <div class="chat-info">
+                            <h6>${item.nome_usuario} <small><i class="fas fa-circle ${statusClass}"></i> ${item.status}</small></h6>
                         </div>
-                    `);
-                });
-            }
-        });
-    }
-    
+                    </div>
+                `);
+            });
+            // Adicionar evento de clique após inserir os itens
+            adicionarEventoClique();
+        }
+    });
+}
+
+// Função para adicionar evento de clique
+function adicionarEventoClique() {
+    $('.chat-user').off('click').on('click', function() {
+        let id_usuario = $(this).data('id-usuario');
+        carregarConversa(id_usuario);
+    });
+}
+
     // Função para listar usuários bloqueados
     function listarBloqueados() {
         $.ajax({
             url: "{{ url_for('chat.listar_bloqueados') }}",
             method: 'GET',
-            success: function(response) {
+            success: function (response) {
                 $('#blocked').empty();
-                response.forEach(function(item) {
+                response.forEach(function (item) {
                     $('#blocked').append(`
                         <div class="chat-user">
                             <img src="{{ url_for('static', filename='img/usuarios/') }}${item.foto_perfil}" class="rounded-circle" alt="User Image">
@@ -206,15 +268,15 @@
             }
         });
     }
-    
+
     // Função para listar grupos
     function listarGrupos() {
         $.ajax({
             url: "{{ url_for('chat.listar_grupos') }}",
             method: 'GET',
-            success: function(response) {
+            success: function (response) {
                 $('#group').empty();
-                response.forEach(function(item) {
+                response.forEach(function (item) {
                     $('#group').append(`
                         <div class="chat-user">
                             <img src="{{ url_for('static', filename='img/usuarios/') }}${item.foto_grupo}" class="rounded-circle" alt="User Image">
@@ -227,22 +289,194 @@
             }
         });
     }
+
+    // Variável global para armazenar o ID da última mensagem
+    var ultimaMensagemId = 0;
+
+    // Função para carregar novas mensagens
+function carregarNovasMensagens(id_conversa) {
+    $.ajax({
+        url: `/carregar_novas_mensagens/${id_conversa}/${ultimaMensagemId}`,
+        method: 'GET',
+        success: function(response) {
+            var id_usuario_logado = {{ session['id_usuario'] | tojson }};
+            
+            response.mensagens.forEach(function(msg) {
+                ultimaMensagemId = Math.max(ultimaMensagemId, msg.id_mensagem);
+                let messageClass = msg.id_remetente == id_usuario_logado ? 'sent' : 'received';
+                let alignClass = msg.id_remetente == id_usuario_logado ? 'justify-content-end' : 'justify-content-start';
+                
+                $('.chat-body').append(`
+                    <div class="message">
+                        <div class="d-flex ${alignClass}">
+                            ${messageClass !== 'sent' ? `<img src="{{ url_for('static', filename='img/usuarios/') }}${msg.foto_perfil}" class="rounded-circle mr-2" width="25" height="25" alt="User Image">` : ''}
+                            <div class="message-content ${messageClass}">
+                                <p>${msg.mensagem}</p>
+                                <span class="message-time">${new Date(msg.enviado_em).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>
+                            </div>
+                            ${messageClass === 'sent' ? `<img src="{{ url_for('static', filename='img/usuarios/') }}${msg.foto_perfil}" class="rounded-circle ml-2" width="25" height="25" alt="User Image">` : ''}
+                        </div>
+                    </div>
+                `);
+            });
+
+            // Rolar para o final da conversa
+            $('.chat-body').scrollTop($('.chat-body')[0].scrollHeight);
+        }
+    });
+}
+
+    // Função para iniciar a atualização periódica
+function iniciarAtualizacaoMensagens(id_conversa) {
+    // Limpar qualquer intervalo existente
+    if (window.atualizacaoInterval) {
+        clearInterval(window.atualizacaoInterval);
+    }
+
+    // Definir novo intervalo
+    window.atualizacaoInterval = setInterval(function() {
+        carregarNovasMensagens(id_conversa);
+    }, 5000); // 5000 milissegundos = 5 segundos
+}
+
+
+
     
+function carregarConversa(id_usuario) {
+    $.ajax({
+        url: `/carregar_conversa/${id_usuario}`,
+        method: 'GET',
+        success: function(response) {
+            $('.chat-body').empty();
+            var id_usuario_logado = {{ session['id_usuario'] | tojson }};
+            var currentDate = '';
+
+            // Atualizar o cabeçalho da conversa com os dados do usuário
+            $('.chat-header').html(`
+                <button id="sidebar-toggle" class="btn btn-light d-md-none mr-3">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <a href="{{ url_for('usuarios.ver_perfil', usuario_id=2  ) }} ">
+                    <img src="{{ url_for('static', filename='img/usuarios/') }}${response.usuario_conversa.foto_perfil}" class="rounded-circle mr-2" width="40" alt="User Image">
+                </a>
+                    <div>
+                    <h5>
+                        <a class="text-decoration-none text-dark" href="{{ url_for('usuarios.ver_perfil', usuario_id=2  ) }} >
+                                ${response.usuario_conversa.nome}
+                        </a>
+                    </h5>
+                    <small><i class="fas fa-circle ${response.usuario_conversa.status === 'online' ? 'text-success' : 'text-secondary'}"></i> ${response.usuario_conversa.status}</small>
+                </div>
+                <div class="ml-auto">
+                    <i class="fas fa-search mx-2"></i>
+                    <i class="fas fa-phone mx-2"></i>
+                    <i class="fas fa-video mx-2"></i>
+                    <i class="fas fa-ellipsis-v mx-2"></i>
+                </div>
+            `);
+
+            // Adicionar a data de criação da conversa apenas uma vez, no início
+            if (response.mensagens.length > 0) {
+                var conversaData = new Date(response.mensagens[0].enviado_em);
+                $('.chat-body').append(`<p class="small text-muted">Conversa iniciada em ${conversaData.toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>`);
+            }
+
+            response.mensagens.forEach(function(msg) {
+                let messageClass = msg.id_remetente == id_usuario_logado ? 'sent' : 'received';
+                let alignClass = msg.id_remetente == id_usuario_logado ? 'justify-content-end' : 'justify-content-start';
+                
+                // Verificar se a data mudou, mas não adicionar para a primeira mensagem
+                var msgDate = new Date(msg.enviado_em).toLocaleDateString();
+                if (msgDate !== currentDate && currentDate !== '') {
+                    $('.chat-body').append(`<p class="small text-muted">${new Date(msg.enviado_em).toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>`);
+                }
+                currentDate = msgDate;
+
+                $('.chat-body').append(`
+                    <div class="message">
+                        <div class="d-flex ${alignClass}">
+                            ${messageClass !== 'sent' ? `<img src="{{ url_for('static', filename='img/usuarios/') }}${msg.foto_perfil}" class="rounded-circle mr-2" width="25" height="25" alt="User Image">` : ''}
+                            <div class="message-content ${messageClass}">
+                                <p>${msg.mensagem}</p>
+                                <span class="message-time">${new Date(msg.enviado_em).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>
+                            </div>
+                            ${messageClass === 'sent' ? `<img src="{{ url_for('static', filename='img/usuarios/') }}${msg.foto_perfil}" class="rounded-circle ml-2" width="25" height="25" alt="User Image">` : ''}
+                        </div>
+                    </div>
+                `);
+            });
+            $('#chat-footer').data('id-conversa', response.id_conversa);
+
+            // Atualizar o ultimaMensagemId
+            if (response.mensagens.length > 0) {
+                ultimaMensagemId = response.mensagens[response.mensagens.length - 1].id_mensagem;
+            }
+
+            // Iniciar atualização periódica
+            iniciarAtualizacaoMensagens(response.id_conversa);
+
+            // Rolar para o final da conversa
+            $('.chat-body').scrollTop($('.chat-body')[0].scrollHeight);
+        }
+    });
+}
+    // Atualizar a função enviarMensagem para incluir a foto do perfil
+function enviarMensagem() {
+    let mensagem = $('.chat-footer input').val();
+    let id_conversa = $('#chat-footer').data('id-conversa');
+    
+    $.ajax({
+        url: '/enviar_mensagem',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({
+            id_conversa: id_conversa,
+            mensagem: mensagem
+        }),
+        success: function(response) {
+            if (response.status === 'success') {
+                $('.chat-body').append(`
+                    <div class="message">
+                        <div class="d-flex justify-content-end">
+                            <div class="message-content sent">
+                                <p>${response.mensagem.mensagem}</p>
+                                <span class="message-time">${new Date(response.mensagem.enviado_em).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>
+                            </div>
+                            <img src="{{ url_for('static', filename='img/usuarios/') }}${response.mensagem.foto_perfil}" class="rounded-circle ml-2" width="25" height="25" alt="User Image">
+                        </div>
+                    </div>
+                `);
+                $('.chat-footer input').val('');
+            }
+        }
+    });
+}
+
+    
+    // Evento de envio de mensagem
+    $('.chat-footer i.fa-paper-plane').click(enviarMensagem);
+    $('.chat-footer input').keypress(function(e) {
+        if(e.which == 13) {  // Enter key
+            enviarMensagem();
+        }
+    });
+
+
+
     // Atualizar listas a cada 5 segundos
-    setInterval(function() {
+    setInterval(function () {
         listarConversas();
         listarUsuarios();
         listarBloqueados();
         listarGrupos();
     }, 5000);
-    
+
     // Carregar listas ao carregar a página
-    $(document).ready(function() {
+    $(document).ready(function () {
         listarConversas();
         listarUsuarios();
         listarBloqueados();
         listarGrupos();
     });
-    </script>
-    {% endblock %}
-    
+</script>
+{% endblock %}

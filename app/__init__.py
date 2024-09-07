@@ -16,6 +16,7 @@ from app.models import usuario, mensagem, conversa, configuracao_usuario, grupo,
 # Importar os controladores
 from .controllers.chat_controller import chat_bp
 from .controllers.usuarios_controller import usuario_bp
+from .controllers.mensagem_controller import mensagem_bp
 
 def create_app():
     app = Flask(__name__)
@@ -27,5 +28,6 @@ def create_app():
     #Registrar os blueprints
     app.register_blueprint(chat_bp)
     app.register_blueprint(usuario_bp)
+    app.register_blueprint(mensagem_bp)
 
     return app

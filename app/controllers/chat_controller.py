@@ -1,8 +1,6 @@
 
 from flask import render_template, Blueprint, jsonify, session
 from datetime import datetime, timedelta
-
-
 from app.models.usuario import Usuario, db
 from app.models.participante_conversa import ParticipanteConversa, db
 from app.models.conversa import Conversa, db

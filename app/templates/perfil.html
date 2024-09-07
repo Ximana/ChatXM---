@@ -128,8 +128,8 @@
                                 <div class="card">
                                     <div class="card-body text-center">
                                         <img src="{{ url_for('static', filename='img/usuarios/' ~ usuario.foto_perfil) }}" class="rounded-circle mb-3" alt="User Avatar" width="150">
-                                        <h5 class="card-title">John Mark Doe Kyzer</h5>
-                                        <p class="text-muted">Coach</p>
+                                        <h5 class="card-title">{{ usuario.nome_usuario }}</h5>
+                                        <!--<p class="text-muted">Coach</p>-->
                                     </div>
                                 </div>
                             </div>
@@ -140,6 +140,7 @@
                                         <div><strong>Email:</strong> <span>{{ usuario.email }}</span></div>
                                         <div><strong>Telefone:</strong> <span>{{ usuario.numero_telefone }}</span></div>
 
+                                        {% if session.get('id_usuario') == usuario.id_usuario %}
                                         <div class="mt-5">
                                             <form class="d-inline" action="{{ url_for('usuarios.remover_usuario') }}" method="POST">
                                                 <button type="submit" class="btn btn-danger btn-sm">Eliminar Conta</button>
@@ -148,6 +149,7 @@
                                                 Editar Usuario
                                             </button>
                                         </div>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>

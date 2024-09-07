@@ -109,13 +109,20 @@
             </div>
             <!-- Main Content -->
             <div class="col-md-9 col-lg-10" id="main-content">
+                <!-- Dados do usuario participante da conversa -->
                 <div class="chat-header d-flex align-items-center bg-success">
                     <button id="sidebar-toggle" class="btn btn-light d-md-none mr-3">
                         <i class="fas fa-bars"></i>
                     </button>
-                    <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="rounded-circle mr-2" width="40" alt="User Image">
+                    <a href="{{ url_for('usuarios.ver_perfil', usuario_id=2) }}">
+                        <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="rounded-circle mr-2" width="40" alt="User Image">
+                    </a>
                     <div>
-                        <h5>Nome usuario a coversar</h5>
+                        <h5>
+                            <a class="text-decoration-none text-dark" href="{{ url_for('usuarios.ver_perfil', usuario_id=session['id_usuario']) }}">
+                                Nome usuario a coversar
+                            </a>
+                            </h5>
                         <small><i class="fas fa-circle text-success"></i> status</small>
                     </div>
                     <div class=" ">
@@ -126,10 +133,12 @@
                     </div>
                 </div>
                 <div class="chat-body">
+                    <p class="small text-muted">Monday, 22 April 2020</p>
                     <div class="message">
-                        <p class="small text-muted">Monday, 22 April 2020</p>
+                        
                         <div class="d-flex justify-content-start">
                             <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="rounded-circle mr-2" width="25" height="25" alt="User Image">
+                            <!-- Mensagem recebida -->
                             <div class="message-content">
                                 <p>Great, I'm eager to hear your feedback. We've put a lot of effort into refining these designs.</p>
                                 <span class="message-time">09:12 AM</span>
@@ -138,6 +147,7 @@
                     </div>
                     <div class="message">
                         <div class="d-flex justify-content-end">
+                            <!-- Mensagem enviada -->
                             <div class="message-content sent">
                                 <p>Wow, these prototypes look fantastic! I really like the sleek design and the color choices. I think they'll definitely appeal to our target market</p>
                                 <span class="message-time">09:14 AM</span>
@@ -148,6 +158,7 @@
                     <div class="message">
                         <div class="d-flex justify-content-start">
                             <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="rounded-circle mr-2" width="25" height="25" alt="User Image">
+                            <!-- Mensagem recebida -->
                             <div class="message-content">
                                 <p>Actually, I noticed a small issue with the placement of the logo on the second prototype. It seems a bit off-center. Other than that, everything looks spot on</p>
                                 <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="img-thumbnail" alt="Image">
@@ -156,6 +167,7 @@
                         </div>
                     </div>
                 </div>
+                <!--Campo para escrever mensagem-->
                 <div class="chat-footer">
                     <input type="text" class="form-control" placeholder="Escreva a sua mensagem">
                     <i class="fas fa-paper-plane ml-2"></i>
