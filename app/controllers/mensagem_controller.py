@@ -3,7 +3,11 @@ from app.models.conversa import Conversa
 from app.models.mensagem import Mensagem
 from app.models.usuario import Usuario
 from app.models.participante_conversa import ParticipanteConversa
+from app.models.grupo import Grupo
+from app.models.mensagem_grupo import MensagemGrupo
+from app.models.membro_grupo import MembroGrupo
 from app import db
+import logging
 
 mensagem_bp = Blueprint('mensagem', __name__)
 
@@ -98,3 +102,94 @@ def carregar_novas_mensagens(id_conversa, ultima_mensagem_id):
     return jsonify({
         'mensagens': mensagens_formatadas
     })
+
+@mensagem_bp.route('/carregar_todas_mensagens_grupo/<int:id_grupo>', methods=['GET'])
+def carregar_todas_mensagens_grupo(id_grupo):
+    id_usuario_logado = session.get('id_usuario')
+    
+    # Verificar se o usuário logado faz parte do grupo
+    membro = MembroGrupo.query.filter_by(id_grupo=id_grupo, id_usuario=id_usuario_logado).first()
+    if not membro:
+        return jsonify({'erro': 'Usuário não faz parte deste grupo'}), 403
+    
+    # Carregar todas as mensagens do grupo
+    mensagens = MensagemGrupo.query.filter_by(id_grupo=id_grupo).order_by(MensagemGrupo.enviado_em).all()
+    
+    mensagens_formatadas = [{
+        'id_mensagem_grupo': msg.id_mensagem_grupo,
+        'id_remetente': msg.id_remetente,
+        'mensagem': msg.mensagem,
+        'tipo_mensagem': msg.tipo_mensagem,
+        'enviado_em': msg.enviado_em.strftime('%Y-%m-%d %H:%M:%S'),
+        'lida': msg.lida,
+        'foto_perfil': Usuario.query.get(msg.id_remetente).foto_perfil
+    } for msg in mensagens]
+    
+    grupo = Grupo.query.get(id_grupo)
+    
+    return jsonify({
+        'id_grupo': grupo.id_grupo,
+        'nome_grupo': grupo.nome_grupo,
+        'descricao_grupo': grupo.descricao_grupo,
+        'foto_grupo': grupo.foto_grupo,
+        'criado_por': grupo.criado_por,
+        'criado_em': grupo.criado_em.strftime('%Y-%m-%d %H:%M:%S'),
+        'atualizado_em': grupo.atualizado_em.strftime('%Y-%m-%d %H:%M:%S'),
+        'mensagens': mensagens_formatadas
+    })
+
+@mensagem_bp.route('/atualizar_mensagens_grupo/<int:id_grupo>/<int:ultima_mensagem_id>', methods=['GET'])
+def atualizar_mensagens_grupo(id_grupo, ultima_mensagem_id):
+    novas_mensagens = MensagemGrupo.query.filter(
+        MensagemGrupo.id_grupo == id_grupo,
+        MensagemGrupo.id_mensagem_grupo > ultima_mensagem_id
+    ).order_by(MensagemGrupo.enviado_em).all()
+
+    mensagens_formatadas = [{
+        'id_mensagem_grupo': msg.id_mensagem_grupo,
+        'id_remetente': msg.id_remetente,
+        'nome_remetente': Usuario.query.get(msg.id_remetente).nome_usuario,
+        'mensagem': msg.mensagem,
+        'enviado_em': msg.enviado_em.strftime('%Y-%m-%d %H:%M:%S'),
+        'foto_perfil': Usuario.query.get(msg.id_remetente).foto_perfil
+    } for msg in novas_mensagens]
+
+    return jsonify({'novas_mensagens': mensagens_formatadas})
+
+@mensagem_bp.route('/carregar_mensagens_grupo/<int:id_grupo>', methods=['GET'])
+def carregar_mensagens_grupo(id_grupo):
+    logging.info(f'Recebida solicitação para carregar mensagens do grupo {id_grupo}')
+    id_usuario_logado = session.get('id_usuario')
+    
+    logging.info(f'Usuário logado: {id_usuario_logado}')
+    
+    # Verificar se o usuário é membro do grupo
+    membro = MembroGrupo.query.filter_by(id_grupo=id_grupo, id_usuario=id_usuario_logado).first()
+    if not membro:
+        logging.warning(f'Usuário {id_usuario_logado} não é membro do grupo {id_grupo}')
+        return jsonify({'erro': 'Usuário não é membro deste grupo'}), 403
+    
+    grupo = Grupo.query.get(id_grupo)
+    mensagens = MensagemGrupo.query.filter_by(id_grupo=id_grupo).order_by(MensagemGrupo.enviado_em).all()
+    
+    logging.info(f'Encontradas {len(mensagens)} mensagens para o grupo {id_grupo}')
+    
+    mensagens_formatadas = [{
+        'id_mensagem_grupo': msg.id_mensagem_grupo,
+        'id_remetente': msg.id_remetente,
+        'nome_remetente': Usuario.query.get(msg.id_remetente).nome_usuario,
+        'mensagem': msg.mensagem,
+        'enviado_em': msg.enviado_em.isoformat(),
+        'foto_perfil': Usuario.query.get(msg.id_remetente).foto_perfil
+    } for msg in mensagens]
+    
+    resposta = {
+        'id_grupo': grupo.id_grupo,
+        'nome_grupo': grupo.nome_grupo,
+        'foto_grupo': grupo.foto_grupo,
+        'membros_count': MembroGrupo.query.filter_by(id_grupo=id_grupo).count(),
+        'mensagens': mensagens_formatadas
+    }
+    
+    logging.info(f'Retornando resposta para o grupo {id_grupo}')
+    return jsonify(resposta)

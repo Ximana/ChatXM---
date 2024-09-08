@@ -258,9 +258,14 @@ function adicionarEventoClique() {
                 response.forEach(function (item) {
                     $('#blocked').append(`
                         <div class="chat-user">
+                            <a href="/usuarios/perfil/${item.id_usuario}">
                             <img src="{{ url_for('static', filename='img/usuarios/') }}${item.foto_perfil}" class="rounded-circle" alt="User Image">
+                            </a>
+                            
                             <div class="chat-info">
+                                <a class="text-decoration-none text-dark" href="/usuarios/perfil/${item.id_usuario}">
                                 <h6>${item.nome_usuario}</h6>
+                                </a>
                             </div>
                         </div>
                     `);
@@ -270,58 +275,95 @@ function adicionarEventoClique() {
     }
 
     // Função para listar grupos
-    function listarGrupos() {
-        $.ajax({
-            url: "{{ url_for('chat.listar_grupos') }}",
-            method: 'GET',
-            success: function (response) {
-                $('#group').empty();
-                response.forEach(function (item) {
-                    $('#group').append(`
-                        <div class="chat-user">
-                            <img src="{{ url_for('static', filename='img/usuarios/') }}${item.foto_grupo}" class="rounded-circle" alt="User Image">
-                            <div class="chat-info">
-                                <h6>${item.nome_grupo}</h6>
-                            </div>
+function listarGrupos() {
+    $.ajax({
+        url: "{{ url_for('chat.listar_grupos') }}",
+        method: 'GET',
+        success: function (response) {
+            $('#group').empty();
+            response.forEach(function (item) {
+                $('#group').append(`
+                    <div class="chat-user" data-id-grupo="${item.id_grupo}">
+                        <img src="{{ url_for('static', filename='img/grupos/') }}${item.foto_grupo}" class="rounded-circle" alt="Group Image">
+                        <div class="chat-info">
+                            <h6>${item.nome_grupo}</h6>
+                            <small>${item.membros_count} membros</small>
                         </div>
-                    `);
-                });
-            }
-        });
-    }
+                    </div>
+                `);
+            });
+            // Adicionar evento de clique após inserir os itens
+            $('#group .chat-user').click(function() {
+                let id_grupo = $(this).data('id-grupo');
+                console.log('Grupo clicado:', id_grupo);
+                carregarMensagensGrupo(id_grupo);
+            });
+        }
+    });
+}
+
+// Função para adicionar evento de clique nos grupos
+/*function adicionarEventoCliqueGrupo() {
+    $('.chat-user[data-id-grupo]').off('click').on('click', function() {
+        let id_grupo = $(this).data('id-grupo');
+        carregarMensagensGrupo(id_grupo);
+    });
+}
+    */
 
     // Variável global para armazenar o ID da última mensagem
     var ultimaMensagemId = 0;
 
     // Função para carregar novas mensagens
-function carregarNovasMensagens(id_conversa) {
+function carregarMensagensGrupo(id_grupo) {
+    console.log('Iniciando carregamento de mensagens para o grupo:', id_grupo);
     $.ajax({
-        url: `/carregar_novas_mensagens/${id_conversa}/${ultimaMensagemId}`,
+        url: `/carregar_mensagens_grupo/${id_grupo}`,
         method: 'GET',
         success: function(response) {
+            console.log('Resposta recebida:', response);
+            $('.chat-body').empty();
             var id_usuario_logado = {{ session['id_usuario'] | tojson }};
-            
-            response.mensagens.forEach(function(msg) {
-                ultimaMensagemId = Math.max(ultimaMensagemId, msg.id_mensagem);
-                let messageClass = msg.id_remetente == id_usuario_logado ? 'sent' : 'received';
-                let alignClass = msg.id_remetente == id_usuario_logado ? 'justify-content-end' : 'justify-content-start';
-                
-                $('.chat-body').append(`
-                    <div class="message">
-                        <div class="d-flex ${alignClass}">
-                            ${messageClass !== 'sent' ? `<img src="{{ url_for('static', filename='img/usuarios/') }}${msg.foto_perfil}" class="rounded-circle mr-2" width="25" height="25" alt="User Image">` : ''}
-                            <div class="message-content ${messageClass}">
-                                <p>${msg.mensagem}</p>
-                                <span class="message-time">${new Date(msg.enviado_em).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>
+
+            // Atualizar o cabeçalho do grupo
+            $('.chat-header').html(`
+                <img src="{{ url_for('static', filename='img/grupos/') }}${response.foto_grupo}" class="rounded-circle mr-2" width="40" alt="Group Image">
+                <div>
+                    <h5>${response.nome_grupo}</h5>
+                    <small>${response.membros_count} membros</small>
+                </div>
+            `);
+
+            if (response.mensagens && response.mensagens.length > 0) {
+                response.mensagens.forEach(function(msg) {
+                    let messageClass = msg.id_remetente == id_usuario_logado ? 'sent' : 'received';
+                    let alignClass = msg.id_remetente == id_usuario_logado ? 'justify-content-end' : 'justify-content-start';
+                    
+                    $('.chat-body').append(`
+                        <div class="message">
+                            <div class="d-flex ${alignClass}">
+                                ${messageClass !== 'sent' ? `<img src="{{ url_for('static', filename='img/usuarios/') }}${msg.foto_perfil}" class="rounded-circle mr-2" width="25" height="25" alt="User Image">` : ''}
+                                <div class="message-content ${messageClass}">
+                                    ${messageClass !== 'sent' ? `<small class="sender-name">${msg.nome_remetente}</small>` : ''}
+                                    <p>${msg.mensagem}</p>
+                                    <span class="message-time">${new Date(msg.enviado_em).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>
+                                </div>
                             </div>
-                            ${messageClass === 'sent' ? `<img src="{{ url_for('static', filename='img/usuarios/') }}${msg.foto_perfil}" class="rounded-circle ml-2" width="25" height="25" alt="User Image">` : ''}
                         </div>
-                    </div>
-                `);
-            });
+                    `);
+                });
+            } else {
+                console.log('Nenhuma mensagem recebida para o grupo');
+                $('.chat-body').append('<p>Nenhuma mensagem neste grupo.</p>');
+            }
 
             // Rolar para o final da conversa
             $('.chat-body').scrollTop($('.chat-body')[0].scrollHeight);
+        },
+        error: function(xhr, status, error) {
+            console.error('Erro ao carregar mensagens do grupo:', error);
+            console.log('Status:', status);
+            console.log('Resposta:', xhr.responseText);
         }
     });
 }
@@ -356,13 +398,13 @@ function carregarConversa(id_usuario) {
                 <button id="sidebar-toggle" class="btn btn-light d-md-none mr-3">
                     <i class="fas fa-bars"></i>
                 </button>
-                <a href="{{ url_for('usuarios.ver_perfil', usuario_id=2  ) }} ">
+                <a href="/usuarios/perfil/${response.usuario_conversa.id_usuario}">
                     <img src="{{ url_for('static', filename='img/usuarios/') }}${response.usuario_conversa.foto_perfil}" class="rounded-circle mr-2" width="40" alt="User Image">
                 </a>
-                    <div>
+                <div>
                     <h5>
-                        <a class="text-decoration-none text-dark" href="{{ url_for('usuarios.ver_perfil', usuario_id=2  ) }} >
-                                ${response.usuario_conversa.nome}
+                        <a class="text-decoration-none text-dark" href="/usuarios/perfil/${response.usuario_conversa.id_usuario}">
+                        ${response.usuario_conversa.nome}
                         </a>
                     </h5>
                     <small><i class="fas fa-circle ${response.usuario_conversa.status === 'online' ? 'text-success' : 'text-secondary'}"></i> ${response.usuario_conversa.status}</small>
@@ -451,6 +493,48 @@ function enviarMensagem() {
         }
     });
 }
+
+function carregarMensagensGrupo(id_grupo) {
+    $.ajax({
+        url: `/carregar_mensagens_grupo/${id_grupo}`,
+        method: 'GET',
+        success: function(response) {
+            $('.chat-body').empty();
+            var id_usuario_logado = {{ session['id_usuario'] | tojson }};
+
+            // Atualizar o cabeçalho do grupo
+            $('.chat-header').html(`
+                <img src="{{ url_for('static', filename='img/grupos/') }}${response.foto_grupo}" class="rounded-circle mr-2" width="40" alt="Group Image">
+                <div>
+                    <h5>${response.nome_grupo}</h5>
+                    <small>${response.membros_count} membros</small>
+                </div>
+            `);
+
+            response.mensagens.forEach(function(msg) {
+                let messageClass = msg.id_remetente == id_usuario_logado ? 'sent' : 'received';
+                let alignClass = msg.id_remetente == id_usuario_logado ? 'justify-content-end' : 'justify-content-start';
+                
+                $('.chat-body').append(`
+                    <div class="message">
+                        <div class="d-flex ${alignClass}">
+                            ${messageClass !== 'sent' ? `<img src="{{ url_for('static', filename='img/usuarios/') }}${msg.foto_perfil}" class="rounded-circle mr-2" width="25" height="25" alt="User Image">` : ''}
+                            <div class="message-content ${messageClass}">
+                                ${messageClass !== 'sent' ? `<small class="sender-name">${msg.nome_remetente}</small>` : ''}
+                                <p>${msg.mensagem}</p>
+                                <span class="message-time">${new Date(msg.enviado_em).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>
+                            </div>
+                        </div>
+                    </div>
+                `);
+            });
+
+            // Rolar para o final da conversa
+            $('.chat-body').scrollTop($('.chat-body')[0].scrollHeight);
+        }
+    });
+}
+
 
     
     // Evento de envio de mensagem

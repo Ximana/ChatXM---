@@ -130,12 +130,18 @@ def listar_bloqueados():
 @chat_bp.route('/grupos', methods=['GET'])
 def listar_grupos():
     id_usuario_logado = session.get('id_usuario')
+    grupos_usuario = MembroGrupo.query.filter_by(id_usuario=id_usuario_logado).all()
     
-    grupos = MembroGrupo.query.filter_by(id_usuario=id_usuario_logado).all()
-    resultado = [{
-        'nome_grupo': Grupo.query.get(grupo.id_grupo).nome_grupo,
-        'id_grupo': Grupo.query.get(grupo.id_grupo).id_grupo,
-        'foto_grupo': Grupo.query.get(grupo.id_grupo).foto_grupo
-        } for grupo in grupos]
+    resultado = []
+    for membro_grupo in grupos_usuario:
+        grupo = Grupo.query.get(membro_grupo.id_grupo)
+        if grupo:
+            membros_count = MembroGrupo.query.filter_by(id_grupo=grupo.id_grupo).count()
+            resultado.append({
+                'id_grupo': grupo.id_grupo,
+                'nome_grupo': grupo.nome_grupo,
+                'foto_grupo': grupo.foto_grupo,
+                'membros_count': membros_count
+            })
     
     return jsonify(resultado)

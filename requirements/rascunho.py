@@ -1,149 +1,71 @@
-from flask import Blueprint, request, jsonify, make_response
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from app.models import Usuario, db
-from datetime import datetime
+V. 1 - Nas lista de usuarios e grupos deve aparecer o ponteiro como uma mao indicando que e um link
+V. 2 - Ao clizar na foto de perlfil do contacto ao conversar levar a pagina de perfil do 
+    mesmo, ou, seja, Como passar variavel ajax numa rota flask
+    V. 2.1 - Al clicar num usuario bloqueado mostrar a pagina de perfil do mesmo
+3 - Clicar e visualizar as mensagens  e detalhes do grupo clicado
+    3.1 - Melhorar o estado/status (online, offline)
 
-usuario_bp = Blueprint('usuario', __name__, url_prefix='/usuarios')
 
-# Registro de novo usuário
-@usuario_bp.route('/register', methods=['POST'])
-def register_usuario():
-    data = request.get_json()
+4 - Adicionar a funcionalidade enviar mensagem(individual e em grupo)
+5 - Adicionar a funcionalidade pesquisa de usuarios no sidebar
+6 - Adicionar a funcionalidade de alterar a foto de perfil
 
-    # Verifica se o email ou nome de usuário já existe
-    if Usuario.query.filter_by(email=data['email']).first() or Usuario.query.filter_by(nome_usuario=data['nome_usuario']).first():
-        return make_response(jsonify({'message': 'Email ou nome de usuário já está em uso.'}), 409)
+7 - Adicionar a funcionalidade para alterar o tema do chat(claro ou escuro)
 
-    # Cria um novo usuário
-    hashed_password = generate_password_hash(data['senha'], method='sha256')
-    novo_usuario = Usuario(
-        nome_usuario=data['nome_usuario'],
-        email=data['email'],
-        senha=hashed_password,
-        status='offline'
-    )
-    db.session.add(novo_usuario)
-    db.session.commit()
+_________________________________________________________________
 
-    return make_response(jsonify({'message': 'Usuário registrado com sucesso!'}), 201)
+Melhorar o design do chat
 
-# Login de usuário
-@usuario_bp.route('/login', methods=['POST'])
-def login_usuario():
-    data = request.get_json()
 
-    usuario = Usuario.query.filter_by(email=data['email']).first()
+________________________________________________________________________
 
-    if not usuario or not check_password_hash(usuario.senha, data['senha']):
-        return make_response(jsonify({'message': 'Credenciais inválidas!'}), 401)
+Atualize o meu codigo para que ao clicar num grupo da lista de grupos mostra as mensagens deste grupo(a conversa completa)
+em que o usuario logado faz parte,  Siga a logica usada para carregar as conversas e mensagens das individuais.
 
-    access_token = create_access_token(identity=usuario.id_usuario)
-    usuario.status = 'online'
-    usuario.ultimo_visto = datetime.utcnow()
-    db.session.commit()
-
-    return make_response(jsonify({'access_token': access_token, 'message': 'Login realizado com sucesso!'}), 200)
-
-# Atualização do perfil do usuário
-@usuario_bp.route('/update', methods=['PUT'])
-@jwt_required()
-def update_usuario():
-    usuario_id = get_jwt_identity()
-    usuario = Usuario.query.get(usuario_id)
-
-    data = request.get_json()
-
-    # Atualiza as informações do usuário
-    if 'nome_usuario' in data:
-        usuario.nome_usuario = data['nome_usuario']
-    if 'email' in data:
-        usuario.email = data['email']
-    if 'senha' in data:
-        usuario.senha = generate_password_hash(data['senha'], method='sha256')
-    if 'foto_perfil' in data:
-        usuario.foto_perfil = data['foto_perfil']
-
-    usuario.atualizado_em = datetime.utcnow()
-    db.session.commit()
-
-    return make_response(jsonify({'message': 'Perfil atualizado com sucesso!'}), 200)
-
-# Visualizar informações do perfil
-@usuario_bp.route('/profile', methods=['GET'])
-@jwt_required()
-def view_profile():
-    usuario_id = get_jwt_identity()
-    usuario = Usuario.query.get(usuario_id)
-
-    if not usuario:
-        return make_response(jsonify({'message': 'Usuário não encontrado!'}), 404)
-
-    user_data = {
-        'nome_usuario': usuario.nome_usuario,
-        'email': usuario.email,
-        'foto_perfil': usuario.foto_perfil,
-        'status': usuario.status,
-        'ultimo_visto': usuario.ultimo_visto,
-        'criado_em': usuario.criado_em,
-        'atualizado_em': usuario.atualizado_em
-    }
-
-    return make_response(jsonify(user_data), 200)
-
-# Listar todos os usuários
-@usuario_bp.route('/users', methods=['GET'])
-@jwt_required()
-def list_usuarios():
-    usuarios = Usuario.query.all()
-    output = []
-
-    for usuario in usuarios:
-        usuario_data = {
-            'id_usuario': usuario.id_usuario,
-            'nome_usuario': usuario.nome_usuario,
-            'email': usuario.email,
-            'status': usuario.status,
-            'ultimo_visto': usuario.ultimo_visto
+ // Função para listar todos os usuários
+function listarUsuarios() {
+    $.ajax({
+        url: "{{ url_for('chat.listar_usuarios') }}",
+        method: 'GET',
+        success: function (response) {
+            $('#contacts').empty();
+            response.forEach(function (item) {
+                let statusClass = item.status === 'online' ? 'text-success' : 'text-danger';
+                $('#contacts').append(`
+                    <div class="chat-user" data-id-usuario="${item.id_usuario}">
+                        <img src="{{ url_for('static', filename='img/usuarios/') }}${item.foto_perfil}" class="rounded-circle" alt="User Image">
+                        <div class="chat-info">
+                            <h6>${item.nome_usuario} <small><i class="fas fa-circle ${statusClass}"></i> ${item.status}</small></h6>
+                        </div>
+                    </div>
+                `);
+            });
+            // Adicionar evento de clique após inserir os itens
+            adicionarEventoClique();
         }
-        output.append(usuario_data)
+    });
+}
 
-    return make_response(jsonify(output), 200)
+// Função para adicionar evento de clique
+function adicionarEventoClique() {
+    $('.chat-user').off('click').on('click', function() {
+        let id_usuario = $(this).data('id-usuario');
+        carregarConversa(id_usuario);
+    });
+}
 
-# Excluir conta de usuário
-@usuario_bp.route('/delete', methods=['DELETE'])
-@jwt_required()
-def delete_usuario():
-    usuario_id = get_jwt_identity()
-    usuario = Usuario.query.get(usuario_id)
-
-    if not usuario:
-        return make_response(jsonify({'message': 'Usuário não encontrado!'}), 404)
-
-    db.session.delete(usuario)
-    db.session.commit()
-
-    return make_response(jsonify({'message': 'Conta excluída com sucesso!'}), 200)
-
-# Sair e atualizar status do usuário
-@usuario_bp.route('/logout', methods=['POST'])
-@jwt_required()
-def logout_usuario():
-    usuario_id = get_jwt_identity()
-    usuario = Usuario.query.get(usuario_id)
-
-    if not usuario:
-        return make_response(jsonify({'message': 'Usuário não encontrado!'}), 404)
-
-    usuario.status = 'offline'
-    usuario.ultimo_visto = datetime.utcnow()
-    db.session.commit()
-
-    return make_response(jsonify({'message': 'Logout realizado com sucesso!'}), 200)
+Atualize a funcao `listarGrupos()` para ter a logica do `listarUsuarios()`.
 
 
+// Adicionar a data de criação da conversa apenas uma vez, no início
+            if (response.mensagens.length > 0) {
+                var conversaData = new Date(response.mensagens[0].enviado_em);
+                $('.chat-body').append(`<p class="small text-muted">Conversa iniciada em ${conversaData.toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>`);
+            }
 
-
-
-
-
+// Verificar se a data mudou, mas não adicionar para a primeira mensagem
+                var msgDate = new Date(msg.enviado_em).toLocaleDateString();
+                if (msgDate !== currentDate && currentDate !== '') {
+                    $('.chat-body').append(`<p class="small text-muted">${new Date(msg.enviado_em).toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>`);
+                }
+                currentDate = msgDate;

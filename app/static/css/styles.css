@@ -41,7 +41,7 @@ body {
     background: none;
     border: none;
     padding: 0 15px;
-    color: #007bff;
+    color: #008b3a;
     cursor: pointer;
 }
 .sidebar {
@@ -130,7 +130,7 @@ body {
 }
 
 .nav-icon:hover, .nav-icon.active {
-    background-color: #007bff;
+    background-color: #008b3a;
     color: #fff;
 }
 
@@ -145,6 +145,7 @@ body {
     align-items: center;
     padding: 10px;
     border-bottom: 0 solid #ddd;
+    cursor: pointer;
 }
 
 .chat-user img {
