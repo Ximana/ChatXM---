@@ -2,7 +2,7 @@ V. 1 - Nas lista de usuarios e grupos deve aparecer o ponteiro como uma mao indi
 V. 2 - Ao clizar na foto de perlfil do contacto ao conversar levar a pagina de perfil do 
     mesmo, ou, seja, Como passar variavel ajax numa rota flask
     V. 2.1 - Al clicar num usuario bloqueado mostrar a pagina de perfil do mesmo
-3 - Clicar e visualizar as mensagens  e detalhes do grupo clicado
+V 3 - Clicar e visualizar as mensagens  e detalhes do grupo clicado
     3.1 - Melhorar o estado/status (online, offline)
 
 
@@ -56,16 +56,3 @@ function adicionarEventoClique() {
 
 Atualize a funcao `listarGrupos()` para ter a logica do `listarUsuarios()`.
 
-
-// Adicionar a data de criação da conversa apenas uma vez, no início
-            if (response.mensagens.length > 0) {
-                var conversaData = new Date(response.mensagens[0].enviado_em);
-                $('.chat-body').append(`<p class="small text-muted">Conversa iniciada em ${conversaData.toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>`);
-            }
-
-// Verificar se a data mudou, mas não adicionar para a primeira mensagem
-                var msgDate = new Date(msg.enviado_em).toLocaleDateString();
-                if (msgDate !== currentDate && currentDate !== '') {
-                    $('.chat-body').append(`<p class="small text-muted">${new Date(msg.enviado_em).toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>`);
-                }
-                currentDate = msgDate;

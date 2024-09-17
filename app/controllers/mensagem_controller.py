@@ -63,26 +63,40 @@ def enviar_mensagem():
     mensagem_texto = dados.get('mensagem')
     id_remetente = session.get('id_usuario')
 
-    nova_mensagem = Mensagem(
-        id_conversa=id_conversa,
-        id_remetente=id_remetente,
-        mensagem=mensagem_texto
-    )
-    db.session.add(nova_mensagem)
-    db.session.commit()
+    if not id_conversa or not mensagem_texto or not id_remetente:
+        return jsonify({'status': 'error', 'message': 'Dados incompletos'}), 400
 
-    usuario = Usuario.query.get(id_remetente)
+    # Verificar se a conversa existe e se o usuário faz parte dela
+    conversa = Conversa.query.get(id_conversa)
+    if not conversa:
+        return jsonify({'status': 'error', 'message': 'Conversa não encontrada'}), 404
 
-    return jsonify({
-        'status': 'success',
-        'mensagem': {
-            'id_remetente': nova_mensagem.id_remetente,
-            'mensagem': nova_mensagem.mensagem,
-            'enviado_em': nova_mensagem.enviado_em.strftime('%Y-%m-%d %H:%M:%S'),
-            'foto_perfil': usuario.foto_perfil
-        }
-    })
+    # Aqui você deve adicionar uma verificação para garantir que o usuário faz parte da conversa
+    # Isso depende de como você estruturou o modelo de Conversa
 
+    try:
+        nova_mensagem = Mensagem(
+            id_conversa=id_conversa,
+            id_remetente=id_remetente,
+            mensagem=mensagem_texto
+        )
+        db.session.add(nova_mensagem)
+        db.session.commit()
+
+        usuario = Usuario.query.get(id_remetente)
+
+        return jsonify({
+            'status': 'success',
+            'mensagem': {
+                'id_remetente': nova_mensagem.id_remetente,
+                'mensagem': nova_mensagem.mensagem,
+                'enviado_em': nova_mensagem.enviado_em.strftime('%Y-%m-%d %H:%M:%S'),
+                'foto_perfil': usuario.foto_perfil
+            }
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 @mensagem_bp.route('/carregar_novas_mensagens/<int:id_conversa>/<int:ultima_mensagem_id>', methods=['GET'])
 def carregar_novas_mensagens(id_conversa, ultima_mensagem_id):

@@ -173,11 +173,14 @@
                     </div>
                 </div>
             </div>
+
+            
             <!--Campo para escrever mensagem-->
-            <div class="chat-footer">
-                <input type="text" class="form-control" placeholder="Escreva a sua mensagem">
-                <i class="fas fa-paper-plane ml-2"></i>
+            <div id="chat-footer" class="chat-footer">
+                <input type="text" placeholder="Digite sua mensagem...">
+                <i class="fas fa-paper-plane"></i>
             </div>
+
         </div>
     </div>
 </div>
@@ -191,6 +194,8 @@
 <script src="{{ url_for('static', filename='js/sidebarScript.js') }}"></script>
 
 <script>
+
+var ultimaMensagemId = 0;
     // Função para listar conversas
 function listarConversas() {
     $.ajax({
@@ -312,7 +317,7 @@ function listarGrupos() {
     */
 
     // Variável global para armazenar o ID da última mensagem
-    var ultimaMensagemId = 0;
+    
 
     // Função para carregar novas mensagens
 function carregarMensagensGrupo(id_grupo) {
@@ -368,19 +373,6 @@ function carregarMensagensGrupo(id_grupo) {
     });
 }
 
-    // Função para iniciar a atualização periódica
-function iniciarAtualizacaoMensagens(id_conversa) {
-    // Limpar qualquer intervalo existente
-    if (window.atualizacaoInterval) {
-        clearInterval(window.atualizacaoInterval);
-    }
-
-    // Definir novo intervalo
-    window.atualizacaoInterval = setInterval(function() {
-        carregarNovasMensagens(id_conversa);
-    }, 5000); // 5000 milissegundos = 5 segundos
-}
-
 
 
     
@@ -392,6 +384,15 @@ function carregarConversa(id_usuario) {
             $('.chat-body').empty();
             var id_usuario_logado = {{ session['id_usuario'] | tojson }};
             var currentDate = '';
+
+             // Atualizar o ultimaMensagemId
+            if (response.mensagens.length > 0) {
+                ultimaMensagemId = response.mensagens[response.mensagens.length - 1].id_mensagem;
+                console.log('ultimaMensagemId inicializado:', ultimaMensagemId);
+            } else {
+                ultimaMensagemId = 0;
+                console.log('Nenhuma mensagem encontrada, ultimaMensagemId definido como 0');
+            }
 
             // Atualizar o cabeçalho da conversa com os dados do usuário
             $('.chat-header').html(`
@@ -447,7 +448,10 @@ function carregarConversa(id_usuario) {
                     </div>
                 `);
             });
-            $('#chat-footer').data('id-conversa', response.id_conversa);
+            
+            // Definir o ID da conversa no footer
+            $('#chat-footer').attr('data-id-conversa', response.id_conversa);
+            console.log('ID da conversa definido:', response.id_conversa);
 
             // Atualizar o ultimaMensagemId
             if (response.mensagens.length > 0) {
@@ -462,11 +466,39 @@ function carregarConversa(id_usuario) {
         }
     });
 }
+
+    // Função para iniciar a atualização periódica
+function iniciarAtualizacaoMensagens(id_conversa) {
+    // Limpar qualquer intervalo existente
+    if (window.atualizacaoInterval) {
+        clearInterval(window.atualizacaoInterval);
+    }
+    // Definir novo intervalo
+    window.atualizacaoInterval = setInterval(function() {
+        if (typeof ultimaMensagemId !== 'undefined' && ultimaMensagemId !== null) {
+            carregarNovasMensagens(id_conversa);
+        } else {
+            console.log('ultimaMensagemId ainda não está definido. Aguardando...');
+        }
+    }, 5000); // 5000 milissegundos = 5 segundos
+}
+
+
     // Atualizar a função enviarMensagem para incluir a foto do perfil
 function enviarMensagem() {
-    let mensagem = $('.chat-footer input').val();
-    let id_conversa = $('#chat-footer').data('id-conversa');
+    let mensagem = $('.chat-footer input').val().trim();
+    let id_conversa = $('#chat-footer').attr('data-id-conversa');
     
+    if (!mensagem) {
+        console.log('Mensagem vazia, não enviando.');
+        return;
+    }
+    
+    if (!id_conversa) {
+        console.error('ID da conversa não encontrado.');
+        return;
+    }
+
     $.ajax({
         url: '/enviar_mensagem',
         method: 'POST',
@@ -489,7 +521,13 @@ function enviarMensagem() {
                     </div>
                 `);
                 $('.chat-footer input').val('');
+                $('.chat-body').scrollTop($('.chat-body')[0].scrollHeight);
+            } else {
+                console.error('Erro ao enviar mensagem:', response.message);
             }
+        },
+        error: function(xhr, status, error) {
+            console.error('Erro na requisição AJAX:', error);
         }
     });
 }
@@ -533,6 +571,71 @@ function carregarMensagensGrupo(id_grupo) {
             $('.chat-body').scrollTop($('.chat-body')[0].scrollHeight);
         }
     });
+}
+
+
+// Função para carregar novas mensagens
+function carregarNovasMensagens(id_conversa) {
+
+    console.log('Tentando carregar novas mensagens. ultimaMensagemId:', ultimaMensagemId);
+    if (typeof ultimaMensagemId === 'undefined' || ultimaMensagemId === null) {
+        console.log('ultimaMensagemId não está definido. Ignorando a atualização.');
+        return;
+    }
+
+    $.ajax({
+        url: `/carregar_novas_mensagens/${id_conversa}/${ultimaMensagemId}`,
+        method: 'GET',
+        success: function(response) {
+
+            console.log('Novas mensagens recebidas:', response.mensagens.length);
+            
+
+            var id_usuario_logado = {{ session['id_usuario'] | tojson }};
+            response.mensagens.forEach(function(msg) {
+                let messageClass = msg.id_remetente == id_usuario_logado ? 'sent' : 'received';
+                let alignClass = msg.id_remetente == id_usuario_logado ? 'justify-content-end' : 'justify-content-start';
+                
+                $('.chat-body').append(`
+                    <div class="message">
+                        <div class="d-flex ${alignClass}">
+                            ${messageClass !== 'sent' ? `<img src="{{ url_for('static', filename='img/usuarios/') }}${msg.foto_perfil}" class="rounded-circle mr-2" width="25" height="25" alt="User Image">` : ''}
+                            <div class="message-content ${messageClass}">
+                                <p>${msg.mensagem}</p>
+                                <span class="message-time">${new Date(msg.enviado_em).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>
+                            </div>
+                            ${messageClass === 'sent' ? `<img src="{{ url_for('static', filename='img/usuarios/') }}${msg.foto_perfil}" class="rounded-circle ml-2" width="25" height="25" alt="User Image">` : ''}
+                        </div>
+                    </div>
+                `);
+                
+                // Atualizar o ultimaMensagemId
+                ultimaMensagemId = msg.id_mensagem;
+            });
+            
+            // Rolar para o final da conversa se novas mensagens foram adicionadas
+            if (response.mensagens.length > 0) {
+                $('.chat-body').scrollTop($('.chat-body')[0].scrollHeight);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Erro ao carregar novas mensagens:', error);
+        }
+    });
+}
+
+
+
+// Função para iniciar a atualização periódica (atualizada)
+function iniciarAtualizacaoMensagens(id_conversa) {
+    // Limpar qualquer intervalo existente
+    if (window.atualizacaoInterval) {
+        clearInterval(window.atualizacaoInterval);
+    }
+    // Definir novo intervalo
+    window.atualizacaoInterval = setInterval(function() {
+        carregarNovasMensagens(id_conversa);
+    }, 5000); // 5000 milissegundos = 5 segundos
 }
 
 
