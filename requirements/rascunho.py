@@ -19,40 +19,16 @@ Melhorar o design do chat
 
 ________________________________________________________________________
 
-Atualize o meu codigo para que ao clicar num grupo da lista de grupos mostra as mensagens deste grupo(a conversa completa)
-em que o usuario logado faz parte,  Siga a logica usada para carregar as conversas e mensagens das individuais.
 
- // Função para listar todos os usuários
-function listarUsuarios() {
-    $.ajax({
-        url: "{{ url_for('chat.listar_usuarios') }}",
-        method: 'GET',
-        success: function (response) {
-            $('#contacts').empty();
-            response.forEach(function (item) {
-                let statusClass = item.status === 'online' ? 'text-success' : 'text-danger';
-                $('#contacts').append(`
+Ficou pereito mas quero que as novas mensagens na lista de conversa aparecam em negrito 
+$('#all-messages').append(`
                     <div class="chat-user" data-id-usuario="${item.id_usuario}">
                         <img src="{{ url_for('static', filename='img/usuarios/') }}${item.foto_perfil}" class="rounded-circle" alt="User Image">
                         <div class="chat-info">
                             <h6>${item.nome_usuario} <small><i class="fas fa-circle ${statusClass}"></i> ${item.status}</small></h6>
+                            <small class="text-dark">${item.mensagem}</small><!-- novas mensagens -->
                         </div>
                     </div>
                 `);
-            });
-            // Adicionar evento de clique após inserir os itens
-            adicionarEventoClique();
-        }
-    });
-}
 
-// Função para adicionar evento de clique
-function adicionarEventoClique() {
-    $('.chat-user').off('click').on('click', function() {
-        let id_usuario = $(this).data('id-usuario');
-        carregarConversa(id_usuario);
-    });
-}
-
-Atualize a funcao `listarGrupos()` para ter a logica do `listarUsuarios()`.
-
+E adicione um badge bootstrap "<span class="badge badge-secondary">numero de mensagens</span>" sempre que haver nova mensagem.

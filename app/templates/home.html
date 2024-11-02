@@ -119,59 +119,26 @@
                 <button id="sidebar-toggle" class="btn btn-light d-md-none mr-3">
                     <i class="fas fa-bars"></i>
                 </button>
-                <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}" class="rounded-circle mr-2"
-                    width="40" alt="User Image"><!--Foto de perfil do usuario-->
                 <div>
-                    <h5>Nome usuario a coversar</h5>
-                    <small><i class="fas fa-circle text-success"></i> status</small>
-                </div>
-                <div class=" ">
-                    <i class="fas fa-search mx-2"></i>
-                    <i class="fas fa-phone mx-2"></i>
-                    <i class="fas fa-video mx-2"></i>
-                    <i class="fas fa-ellipsis-v mx-2"></i>
+                    <h5 class="h1">ChatXM</h5>
                 </div>
             </div>
             <div class="chat-body">
-                <div class="message">
-                    <p class="small text-muted">Monday, 22 April 2020</p>
-                    <div class="d-flex justify-content-start">
-                        <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}"
-                            class="rounded-circle mr-2" width="25" height="25" alt="User Image">
-                        <!-- Mensagem recebida -->
-                        <div class="message-content">
-                            <p>Great, I'm eager to hear your feedback. We've put a lot of effort into refining these
-                                designs.</p>
-                            <span class="message-time">09:12 AM</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="message">
-                    <div class="d-flex justify-content-end">
-                        <!-- Mensagem enviada -->
-                        <div class="message-content sent">
-                            <p>Wow, these prototypes look fantastic! I really like the sleek design and the color
-                                choices. I think they'll definitely appeal to our target market</p>
-                            <span class="message-time">09:14 AM</span>
-                        </div>
-                        <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}"
-                            class="rounded-circle ml-2" width="25" height="25" alt="User Image">
-                    </div>
-                </div>
+               
                 <div class="message">
                     <div class="d-flex justify-content-start">
-                        <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}"
-                            class="rounded-circle mr-2" width="25" height="25" alt="User Image">
-                        <!-- Mensagem recebida -->
-                        <div class="message-content">
-                            <p>Actually, I noticed a small issue with the placement of the logo on the second prototype.
-                                It seems a bit off-center. Other than that, everything looks spot on</p>
-                            <img src="{{ url_for('static', filename='img/usuarios/avatar1.png') }}"
-                                class="img-thumbnail" alt="Image">
-                            <span class="message-time">09:32 AM</span>
-                        </div>
                     </div>
                 </div>
+
+				 <div class="">
+                    <div class="d-flex justify-content-center">
+                        <img src="{{ url_for('static', filename='img/app/logo.png') }}"
+                            class="rounded-circle mr-2" width="" height="" alt="ChatXm logo">
+                         </div>
+                </div>
+
+
+
             </div>
 
             
@@ -234,7 +201,7 @@ function listarUsuarios() {
                     <div class="chat-user" data-id-usuario="${item.id_usuario}">
                         <img src="{{ url_for('static', filename='img/usuarios/') }}${item.foto_perfil}" class="rounded-circle" alt="User Image">
                         <div class="chat-info">
-                            <h6>${item.nome_usuario} <small><i class="fas fa-circle ${statusClass}"></i> ${item.status}</small></h6>
+                            <h6>${item.nome_usuario}<small><i class="fas fa-circle ${statusClass}"></i> ${item.status}</small></h6>
                         </div>
                     </div>
                 `);
@@ -316,8 +283,6 @@ function listarGrupos() {
 }
     */
 
-    // Variável global para armazenar o ID da última mensagem
-    
 
     // Função para carregar novas mensagens
 function carregarMensagensGrupo(id_grupo) {
@@ -475,18 +440,14 @@ function iniciarAtualizacaoMensagens(id_conversa) {
     }
     // Definir novo intervalo
     window.atualizacaoInterval = setInterval(function() {
-        if (typeof ultimaMensagemId !== 'undefined' && ultimaMensagemId !== null) {
-            carregarNovasMensagens(id_conversa);
-        } else {
-            console.log('ultimaMensagemId ainda não está definido. Aguardando...');
-        }
+        carregarNovasMensagens(id_conversa);
     }, 5000); // 5000 milissegundos = 5 segundos
 }
 
 
     // Atualizar a função enviarMensagem para incluir a foto do perfil
-function enviarMensagem() {
-    let mensagem = $('.chat-footer input').val().trim();
+    function enviarMensagem() {
+    let mensagem = $('#chat-footer input').val().trim();
     let id_conversa = $('#chat-footer').attr('data-id-conversa');
     
     if (!mensagem) {
@@ -520,8 +481,11 @@ function enviarMensagem() {
                         </div>
                     </div>
                 `);
-                $('.chat-footer input').val('');
+                $('#chat-footer input').val('');
                 $('.chat-body').scrollTop($('.chat-body')[0].scrollHeight);
+                
+                // Atualizar o ultimaMensagemId após enviar uma nova mensagem
+                ultimaMensagemId = response.mensagem.id_mensagem;
             } else {
                 console.error('Erro ao enviar mensagem:', response.message);
             }
@@ -531,7 +495,6 @@ function enviarMensagem() {
         }
     });
 }
-
 function carregarMensagensGrupo(id_grupo) {
     $.ajax({
         url: `/carregar_mensagens_grupo/${id_grupo}`,
@@ -579,10 +542,10 @@ function carregarNovasMensagens(id_conversa) {
 
     console.log('Tentando carregar novas mensagens. ultimaMensagemId:', ultimaMensagemId);
     if (typeof ultimaMensagemId === 'undefined' || ultimaMensagemId === null) {
-        console.log('ultimaMensagemId não está definido. Ignorando a atualização.');
-        return;
+        console.log('ultimaMensagemId não está definido. Definindo como 0.');
+        ultimaMensagemId = 0;
     }
-
+    
     $.ajax({
         url: `/carregar_novas_mensagens/${id_conversa}/${ultimaMensagemId}`,
         method: 'GET',
@@ -664,6 +627,10 @@ function iniciarAtualizacaoMensagens(id_conversa) {
         listarUsuarios();
         listarBloqueados();
         listarGrupos();
+
+        ultimaMensagemId = 0;
+        console.log('ultimaMensagemId inicializado na carga da página:', ultimaMensagemId);
+
     });
 </script>
 {% endblock %}
